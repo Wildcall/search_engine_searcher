@@ -77,4 +77,6 @@ public class AppConfig {
         return new DefaultTempListenerContainerFactory(simpleRabbitListenerContainerFactory, registry,
                                                        defaultQueueDeclareService);
     }
+
+
 }
