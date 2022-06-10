@@ -2,7 +2,6 @@ package ru.malygin.searcher.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
 import ru.malygin.helper.enums.TaskState;
 import ru.malygin.helper.model.TaskCallback;
 import ru.malygin.helper.model.requests.DataRequest;
@@ -10,20 +9,14 @@ import ru.malygin.helper.senders.LogSender;
 import ru.malygin.helper.senders.TaskCallbackSender;
 import ru.malygin.helper.service.DataReceiver;
 import ru.malygin.helper.service.NodeMainService;
-import ru.malygin.searcher.model.SearchResponse;
 import ru.malygin.searcher.model.Task;
 import ru.malygin.searcher.searcher.Searcher;
-import ru.malygin.searcher.searcher.util.AlphabetType;
-import ru.malygin.searcher.searcher.util.Lemmantisator;
 import ru.malygin.searcher.service.IndexService;
 import ru.malygin.searcher.service.LemmaService;
 import ru.malygin.searcher.service.PageService;
 
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import static ru.malygin.searcher.exception.ResponseException.fluxResponseNoContent;
 
 @RequiredArgsConstructor
 @Service
@@ -105,13 +98,5 @@ public class SearcherService implements NodeMainService<Task> {
         logSender.error("SEARCHER ERROR / Id: %s / Code: %s", task.getId(), code);
         TaskCallback callback = new TaskCallback(task.getId(), TaskState.ERROR, null, null);
         taskCallbackSender.send(callback);
-    }
-
-    public Flux<SearchResponse> search(Long siteId,
-                                       String query) {
-        List<String> words = Lemmantisator.getLemmas(query, AlphabetType.CYRILLIC);
-        return pageService
-                .search(siteId, words)
-                .switchIfEmpty(fluxResponseNoContent("no pages"));
     }
 }

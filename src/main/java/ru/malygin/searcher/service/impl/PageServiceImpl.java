@@ -36,6 +36,8 @@ public class PageServiceImpl implements PageService {
     @Override
     public Flux<SearchResponse> search(Long siteId,
                                        List<String> words) {
+        if (words.isEmpty())
+            return Flux.empty();
         return pageRepository
                 .search(words, siteId, words.size())
                 .map(searchResult -> new SearchResponse(searchResult.path(), getTitle(searchResult.content())));
